@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Béton PRO Chantier</title>
+<title>Béton PRO V3</title>
 
 <style>
 body {
@@ -13,17 +13,18 @@ body {
   margin: auto;
   background: #f7f7f7;
 }
+
 h2 { text-align:center; }
 
 input, select, button {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   margin: 6px 0;
   font-size: 16px;
 }
 
 button {
-  background: #2c7be5;
+  background: #1e90ff;
   color: white;
   border: none;
   font-weight: bold;
@@ -33,19 +34,20 @@ button {
   background: white;
   padding: 15px;
   margin-top: 10px;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .big {
   font-size: 18px;
   font-weight: bold;
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<h2>🧱 Béton PRO Chantier</h2>
+<h2>🧱 Béton PRO V3</h2>
 
 <label>Surface (m²)</label>
 <input type="number" id="surface">
@@ -77,31 +79,40 @@ let betonniere = parseFloat(document.getElementById("betonniere").value)/1000;
 
 let volume = surface * epaisseur;
 
-let ciment = volume * dosage;
-let sacs = ciment / 35;
+// TOTAL
+let cimentTotal = volume * dosage;
+let sacsTotal = cimentTotal / 35;
+let sableTotal = volume * 0.5;
+let gravierTotal = volume * 0.8;
 
-let sable = volume * 0.5;
-let gravier = volume * 0.8;
-
-// MODE SEAUX (1:2:3)
-let cimentSeaux = sacs * 1;
-let sableSeaux = sacs * 2;
-let gravierSeaux = sacs * 3;
-
+// TOURNÉES
 let tournees = betonniere ? volume / betonniere : 0;
 
+// PAR TOURNÉE (répartition simple)
+let sacsParTournee = sacsTotal / tournees;
+let sableParTournee = sableTotal / tournees;
+let gravierParTournee = gravierTotal / tournees;
+
+// CONVERSION SEAUX (approx 10L/seau)
+let cimentSeaux = sacsParTournee * 1;
+let sableSeaux = sableParTournee * 1000 / 10;
+let gravierSeaux = gravierParTournee * 1000 / 10;
+
+// EAU (approx)
+let eau = sacsParTournee * 18;
+
 document.getElementById("resultat").innerHTML = `
-<div class="big">📊 Résultat principal</div>
+
+<div class="big">📊 TOTAL</div>
 Volume : ${volume.toFixed(2)} m³<br>
-Sacs ciment : ${Math.ceil(sacs)}<br><br>
+Sacs : ${Math.ceil(sacsTotal)}<br>
+Tournées : ${Math.ceil(tournees)}<br>
 
-<div class="big">🪣 Mode seaux (1-2-3)</div>
-Ciment : ${Math.ceil(cimentSeaux)} seaux<br>
-Sable : ${Math.ceil(sableSeaux)} seaux<br>
-Gravier : ${Math.ceil(gravierSeaux)} seaux<br><br>
-
-<div class="big">⚙️ Bétonnière</div>
-${betonniere ? Math.ceil(tournees)+" tournées" : "Non renseignée"}
+<div class="big">🔥 PAR TOURNÉE</div>
+Ciment : ${sacsParTournee.toFixed(2)} sac<br>
+Sable : ${sableSeaux.toFixed(0)} seaux<br>
+Gravier : ${gravierSeaux.toFixed(0)} seaux<br>
+Eau : ${eau.toFixed(0)} L<br>
 
 `;
 }
