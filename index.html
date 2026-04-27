@@ -3,20 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calcul Béton Pro</title>
-
-<link rel="manifest" href="manifest.json">
+<title>Béton PRO Chantier</title>
 
 <style>
-body { font-family: Arial; padding:20px; max-width:500px; margin:auto; }
-input, select, button { width:100%; padding:10px; margin:5px 0; }
-.result { background:#f4f4f4; padding:10px; margin-top:10px; }
+body {
+  font-family: Arial;
+  padding: 15px;
+  max-width: 500px;
+  margin: auto;
+  background: #f7f7f7;
+}
+h2 { text-align:center; }
+
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  font-size: 16px;
+}
+
+button {
+  background: #2c7be5;
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+
+.result {
+  background: white;
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+
+.big {
+  font-size: 18px;
+  font-weight: bold;
+}
 </style>
 </head>
 
 <body>
 
-<h2>🧱 Calculateur Béton PRO</h2>
+<h2>🧱 Béton PRO Chantier</h2>
 
 <label>Surface (m²)</label>
 <input type="number" id="surface">
@@ -25,29 +54,26 @@ input, select, button { width:100%; padding:10px; margin:5px 0; }
 <input type="number" id="epaisseur">
 
 <label>Type de dalle</label>
-<select id="type">
-<option value="250">Dalle légère</option>
-<option value="300">Terrasse</option>
-<option value="350">Dalle voiture</option>
+<select id="dosage">
+<option value="250">Léger (250 kg/m³)</option>
+<option value="300">Terrasse (300 kg/m³)</option>
+<option value="350">Voiture (350 kg/m³)</option>
 </select>
 
-<label>Capacité bétonnière (litres)</label>
+<label>Capacité bétonnière (L)</label>
 <input type="number" id="betonniere" placeholder="ex: 160">
 
-<label>Prix sac ciment (€)</label>
-<input type="number" id="prixCiment" placeholder="ex: 8">
-
-<button onclick="calculer()">Calculer</button>
+<button onclick="calculer()">CALCULER</button>
 
 <div class="result" id="resultat"></div>
 
 <script>
 function calculer() {
+
 let surface = parseFloat(document.getElementById("surface").value);
 let epaisseur = parseFloat(document.getElementById("epaisseur").value)/100;
-let dosage = parseFloat(document.getElementById("type").value);
+let dosage = parseFloat(document.getElementById("dosage").value);
 let betonniere = parseFloat(document.getElementById("betonniere").value)/1000;
-let prix = parseFloat(document.getElementById("prixCiment").value);
 
 let volume = surface * epaisseur;
 
@@ -57,18 +83,26 @@ let sacs = ciment / 35;
 let sable = volume * 0.5;
 let gravier = volume * 0.8;
 
-let tournees = betonniere ? (volume / betonniere) : 0;
+// MODE SEAUX (1:2:3)
+let cimentSeaux = sacs * 1;
+let sableSeaux = sacs * 2;
+let gravierSeaux = sacs * 3;
 
-let cout = prix ? sacs * prix : 0;
+let tournees = betonniere ? volume / betonniere : 0;
 
 document.getElementById("resultat").innerHTML = `
+<div class="big">📊 Résultat principal</div>
 Volume : ${volume.toFixed(2)} m³<br>
-Ciment : ${ciment.toFixed(0)} kg (${Math.ceil(sacs)} sacs)<br>
-Sable : ${sable.toFixed(2)} m³<br>
-Gravier : ${gravier.toFixed(2)} m³<br><br>
+Sacs ciment : ${Math.ceil(sacs)}<br><br>
 
-Bétonnière : ${betonniere ? tournees.toFixed(1)+" tournées" : "non renseigné"}<br>
-Coût ciment : ${prix ? cout.toFixed(2)+" €" : "non renseigné"}
+<div class="big">🪣 Mode seaux (1-2-3)</div>
+Ciment : ${Math.ceil(cimentSeaux)} seaux<br>
+Sable : ${Math.ceil(sableSeaux)} seaux<br>
+Gravier : ${Math.ceil(gravierSeaux)} seaux<br><br>
+
+<div class="big">⚙️ Bétonnière</div>
+${betonniere ? Math.ceil(tournees)+" tournées" : "Non renseignée"}
+
 `;
 }
 </script>
