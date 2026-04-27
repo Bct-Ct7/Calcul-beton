@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calcul Béton Pro</title>
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+body { font-family: Arial; padding:20px; max-width:500px; margin:auto; }
+input, select, button { width:100%; padding:10px; margin:5px 0; }
+.result { background:#f4f4f4; padding:10px; margin-top:10px; }
+</style>
+</head>
+
+<body>
+
+<h2>🧱 Calculateur Béton PRO</h2>
+
+<label>Surface (m²)</label>
+<input type="number" id="surface">
+
+<label>Épaisseur (cm)</label>
+<input type="number" id="epaisseur">
+
+<label>Type de dalle</label>
+<select id="type">
+<option value="250">Dalle légère</option>
+<option value="300">Terrasse</option>
+<option value="350">Dalle voiture</option>
+</select>
+
+<label>Capacité bétonnière (litres)</label>
+<input type="number" id="betonniere" placeholder="ex: 160">
+
+<label>Prix sac ciment (€)</label>
+<input type="number" id="prixCiment" placeholder="ex: 8">
+
+<button onclick="calculer()">Calculer</button>
+
+<div class="result" id="resultat"></div>
+
+<script>
+function calculer() {
+let surface = parseFloat(document.getElementById("surface").value);
+let epaisseur = parseFloat(document.getElementById("epaisseur").value)/100;
+let dosage = parseFloat(document.getElementById("type").value);
+let betonniere = parseFloat(document.getElementById("betonniere").value)/1000;
+let prix = parseFloat(document.getElementById("prixCiment").value);
+
+let volume = surface * epaisseur;
+
+let ciment = volume * dosage;
+let sacs = ciment / 35;
+
+let sable = volume * 0.5;
+let gravier = volume * 0.8;
+
+let tournees = betonniere ? (volume / betonniere) : 0;
+
+let cout = prix ? sacs * prix : 0;
+
+document.getElementById("resultat").innerHTML = `
+Volume : ${volume.toFixed(2)} m³<br>
+Ciment : ${ciment.toFixed(0)} kg (${Math.ceil(sacs)} sacs)<br>
+Sable : ${sable.toFixed(2)} m³<br>
+Gravier : ${gravier.toFixed(2)} m³<br><br>
+
+Bétonnière : ${betonniere ? tournees.toFixed(1)+" tournées" : "non renseigné"}<br>
+Coût ciment : ${prix ? cout.toFixed(2)+" €" : "non renseigné"}
+`;
+}
+</script>
+
+</body>
+</html>
